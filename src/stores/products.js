@@ -24,8 +24,11 @@ export const useProductStore = defineStore('products', () => {
 
     try {
       const { data } = await api.get('/products', { params: filtres })
-      produits.value   = data.produits
-      pagination.value = data.pagination
+      produits.value   = data?.produits || []
+      // Si data.pagination n'existe pas, on garde les valeurs par défaut
+      if (data?.pagination) {
+        pagination.value = data.pagination
+      }
     } catch (e) {
       erreur.value = 'Impossible de charger les produits. Réessayez.'
       console.error('Erreur chargement produits :', e)

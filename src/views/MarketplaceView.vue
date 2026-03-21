@@ -4,121 +4,35 @@
   GPS : UNIQUEMENT dans VendeursProches, pas dans les filtres
 ============================================================= -->
 <template>
-  <div class="mp">
+  <!-- //<div class="mp"> -->
     <NavBar />
 
     <!-- ═══════════════════════════════════════════════════
          HERO
     ═══════════════════════════════════════════════════ -->
-    <section class="hero">
-      <!-- Fond photo -->
-      <div class="hero-bg">
-        <img :src="heroPhoto" alt="Ville Maroc" class="hero-photo" loading="eager" />
-        <!-- <img
-          src="https://images.unsplash.com/photo-1559827291-72ee739d0d9a?w=1600&q=80&auto=format&fit=crop"
-          alt="Océan Atlantique" class="hero-photo" loading="eager"
-        /> -->
-        <div class="hero-overlay"></div>
-        <div class="hero-shimmer"></div>
-      </div>
 
-      <!-- Vagues -->
-      <div class="waves" aria-hidden="true">
-        <div class="w w1"></div>
-        <div class="w w2"></div>
-        <div class="w w3"></div>
-      </div>
+<div class="main-homepage-wrapper">
+    
+    <HeroSection
+  :hero-photo="heroPhoto"
+  :total-produits="store.pagination.total"
+  v-model:model-search="filtres.search"
+  v-model:model-ville="filtres.city"
+  @search="chargerProduits"
+  @ville-select="onVilleSelect"
+/>
 
-      <!-- Contenu -->
-      <div class="hero-body">
+    <!-- <div class="textured-content-area">
+      <PoissonGrillade />
+      </div> -->
 
-        <!-- Badge live -->
-        <div class="live-badge">
-          <span class="live-dot"></span>
-          Marché en direct · Maroc
-        </div>
-
-        <!-- Titre -->
-        <div class="hero-title-wrap">
-          <p class="hero-eyebrow">Poisson frais — Sans intermédiaire</p>
-          <h1 class="hero-h1">
-            Direct du<br>
-            <span class="hero-accent">Port</span>
-          </h1>
-          <p class="hero-tagline">
-            Contactez les pêcheurs directement par WhatsApp
-          </p>
-        </div>
-
-        <!-- Barre de recherche -->
-        <div class="searchbar">
-          <div class="sb-input-wrap">
-            <span class="sb-icon">🔍</span>
-            <input
-              v-model="filtres.search"
-              @input="rechercherAvecDelai"
-              placeholder="Sardine, thon, crevettes..."
-              class="sb-input"
-            />
-          </div>
-
-          <div class="sb-divider"></div>
-
-          <select v-model="filtres.city" @change="onVilleSelect" class="sb-select">
-            <option value="">📍 Toutes les villes</option>
-            <option value="Tanger">🌊 Tanger</option>
-            <option value="Casablanca">🏙️ Casablanca</option>
-            <option value="Agadir">🏖️ Agadir</option>
-            <option value="Rabat">🏛️ Rabat</option>
-            <option value="Dakhla">🏜️ Dakhla</option>
-            <option value="Safi">⚓ Safi</option>
-            <option value="Nador">🐟 Nador</option>
-          </select>
-
-          <button @click="chargerProduits" class="sb-btn">
-            Chercher
-          </button>
-        </div>
-
-        <!-- Métriques -->
-        <div class="hero-metrics">
-          <div class="metric">
-            <span class="metric-val">{{ store.pagination.total || '—' }}</span>
-            <span class="metric-lbl">Annonces actives</span>
-          </div>
-          <div class="metric-sep"></div>
-          <div class="metric">
-            <span class="metric-val">100%</span>
-            <span class="metric-lbl">Frais du jour</span>
-          </div>
-          <div class="metric-sep"></div>
-          <div class="metric">
-            <span class="metric-val gold">0 MAD</span>
-            <span class="metric-lbl">Commission</span>
-          </div>
-          <div class="metric-sep"></div>
-          <div class="metric">
-            <span class="metric-val green">Direct</span>
-            <span class="metric-lbl">WhatsApp & Appel</span>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- Scroll hint -->
-      <div class="scroll-hint" aria-hidden="true">
-        <span>Découvrir les offres</span>
-        <svg width="14" height="18" viewBox="0 0 14 18" fill="none">
-          <path d="M7 1v16M7 17L1 11M7 17l6-6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-        </svg>
-      </div>
-    </section>
+  </div>
 
     <!-- ═══════════════════════════════════════════════════
          PROMOS DÉFILANTES
     ═══════════════════════════════════════════════════ -->
-    <ProductPromo />
-
+    <!-- <ProductPromo /> -->
+     <VagueduJour /> 
     <!-- ═══════════════════════════════════════════════════
          VENDEURS PROCHES — GPS ici seulement
     ═══════════════════════════════════════════════════ -->
@@ -147,47 +61,75 @@
       </div>
 
       <!-- Droite : compteur + toggle vue -->
-      <div class="toolbar-right">
-        <span class="count-txt">
-          <strong>{{ store.pagination.total }}</strong> produits
-        </span>
+      <!-- =============================================================
+  TOOLBAR VIEW SWITCHER (PRO UX)
+============================================================= -->
 
-        <div class="vue-btns">
-          <!-- Liste -->
-          <button @click="vue='liste'" :class="['vb', vue==='liste'&&'vb-on']" title="Liste">
-            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
-              <line x1="2" y1="5"  x2="18" y2="5"/>
-              <line x1="2" y1="10" x2="18" y2="10"/>
-              <line x1="2" y1="15" x2="18" y2="15"/>
-            </svg>
-          </button>
-          <!-- 2 colonnes -->
-          <button @click="vue='2'" :class="['vb', vue==='2'&&'vb-on']" title="2 colonnes">
-            <svg viewBox="0 0 20 20" fill="currentColor">
-              <rect x="1" y="1" width="8" height="18" rx="2"/>
-              <rect x="11" y="1" width="8" height="18" rx="2"/>
-            </svg>
-          </button>
-          <!-- 3 colonnes -->
-          <button @click="vue='3'" :class="['vb', vue==='3'&&'vb-on']" title="3 colonnes">
-            <svg viewBox="0 0 20 20" fill="currentColor">
-              <rect x="1"   y="1" width="5" height="18" rx="1.5"/>
-              <rect x="7.5" y="1" width="5" height="18" rx="1.5"/>
-              <rect x="14"  y="1" width="5" height="18" rx="1.5"/>
-            </svg>
-          </button>
-          <!-- 4 colonnes -->
-          <button @click="vue='4'" :class="['vb', vue==='4'&&'vb-on']" title="4 colonnes">
-            <svg viewBox="0 0 20 20" fill="currentColor">
-              <rect x="1"    y="1" width="3.5" height="18" rx="1"/>
-              <rect x="5.5"  y="1" width="3.5" height="18" rx="1"/>
-              <rect x="10"   y="1" width="3.5" height="18" rx="1"/>
-              <rect x="14.5" y="1" width="3.5" height="18" rx="1"/>
-            </svg>
-          </button>
-        </div>
-      </div>
-    </div>
+<div class="toolbar-right flex items-center gap-4">
+
+  <!-- COUNT -->
+  <span class="count-txt text-sm text-gray-600">
+    <strong class="text-gray-900">{{ store.pagination.total }}</strong> produits
+  </span>
+
+  <!-- VIEW BUTTONS -->
+  <div class="vue-btns flex items-center bg-gray-100 rounded-xl p-1 shadow-inner">
+
+    <!-- 2 colonnes -->
+    <button
+      @click="vue='2'"
+      :class="btnClass('2')"
+      title="2 colonnes"
+    >
+      <svg viewBox="0 0 20 20" fill="currentColor">
+        <rect x="1" y="1" width="8" height="18" rx="2"/>
+        <rect x="11" y="1" width="8" height="18" rx="2"/>
+      </svg>
+    </button>
+
+    <!-- 3 colonnes -->
+    <button
+      @click="vue='3'"
+      :class="btnClass('3')"
+      title="3 colonnes"
+    >
+      <svg viewBox="0 0 20 20" fill="currentColor">
+        <rect x="1" y="1" width="5" height="18" rx="1.5"/>
+        <rect x="7.5" y="1" width="5" height="18" rx="1.5"/>
+        <rect x="14" y="1" width="5" height="18" rx="1.5"/>
+      </svg>
+    </button>
+
+    <!-- 4 colonnes -->
+    <button
+      @click="vue='4'"
+      :class="btnClass('4')"
+      title="4 colonnes"
+    >
+      <svg viewBox="0 0 20 20" fill="currentColor">
+        <rect x="1" y="1" width="3.5" height="18" rx="1"/>
+        <rect x="5.5" y="1" width="3.5" height="18" rx="1"/>
+        <rect x="10" y="1" width="3.5" height="18" rx="1"/>
+        <rect x="14.5" y="1" width="3.5" height="18" rx="1"/>
+      </svg>
+    </button>
+
+    <!-- LISTE -->
+    <button
+      @click="vue='liste'"
+      :class="btnClass('liste')"
+      title="Liste"
+    >
+      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="2" y1="5"  x2="18" y2="5"/>
+        <line x1="2" y1="10" x2="18" y2="10"/>
+        <line x1="2" y1="15" x2="18" y2="15"/>
+      </svg>
+    </button>
+</div>
+  </div>
+
+</div>
 
     <!-- Pills filtres actifs -->
     <div v-if="filtres.city || filtres.category" class="active-filters">
@@ -261,11 +203,12 @@
       </div>
     </main>
     <FooterSamak />
-  </div>
+  <!-- </div> -->
   <ChatBot />
 </template>
 
 <script setup>
+import HeroSection from '../components/HeroSection.vue'
 import { ref, computed, onMounted } from 'vue'
 import { useProductStore }   from '../stores/products'
 import NavBar          from '../components/NavBar.vue'
@@ -274,6 +217,15 @@ import ProductPromo    from '../components/ProductPromo.vue'
 import VendeursProches from '../components/VendeursProches.vue'
 import FooterSamak  from '../components/FooterSamak.vue'
 import ChatBot      from '../components/ChatBot.vue'
+import VagueduJour   from '../components/VagueduJour.vue'
+//import PoissonGrillade from '../components/PoissonGrillade.vue'
+const btnClass = (type) => [
+  'vb w-9 h-9 flex items-center justify-center rounded-lg transition-all duration-200',
+  'text-gray-500 hover:text-blue-700 hover:bg-white',
+  vue === type
+    ? 'bg-white text-blue-800 shadow font-bold'
+    : ''
+]
 
 const store = useProductStore()
 //image change dans hero par ville en searchbar
@@ -297,7 +249,7 @@ const onVilleSelect = () => {
   chargerProduits()
 }
 // ── Vue grille ──────────────────────────────────────────────
-const vue = ref('3')
+const vue = ref('4')
 const grilleClass = computed(() => ({
   liste: 'flex flex-col gap-3',
   '2':   'grid grid-cols-1 sm:grid-cols-2 gap-5',
@@ -322,13 +274,35 @@ const categories = [
 // ── Fonctions ────────────────────────────────────────────────
 const chargerProduits = () => {
   const p = {}
-  if (filtres.value.search)   p.search   = filtres.value.search
-  if (filtres.value.city)     p.city     = filtres.value.city
-  if (filtres.value.category) p.category = filtres.value.category
-  p.page  = filtres.value.page
-  p.limit = filtres.value.limit
+
+  if (filtres.value.search?.trim()) {
+    p.search = filtres.value.search
+  }
+
+  if (filtres.value.city && filtres.value.city !== "ALL") {
+    p.city = filtres.value.city
+  }
+
+  if (filtres.value.category) {
+    p.category = filtres.value.category
+  }
+
+  p.page  = filtres.value.page || 1
+  p.limit = filtres.value.limit || 10
+
   store.chargerProduits(p)
 }
+const detectCity = async () => {
+  try {
+    const res = await fetch("/api/detect-city");
+    const data = await res.json();
+
+    filtres.value.city = data.city || "ALL";
+
+  } catch (e) {
+    filtres.value.city = "ALL";
+  }
+};
 
 const filtrerCategorie = (cat) => {
   filtres.value.category = cat
@@ -362,7 +336,14 @@ const rechercherAvecDelai = () => {
   }, 450)
 }
 
-onMounted(() => { chargerProduits() })
+onMounted(async () => {
+  await detectCity();   // set city
+  chargerProduits();    // utilise city
+});
+   store.visitors = '12K'
+store.sellers = '250'
+store.orders = '890'
+store.revenue = '2.5M+'
 </script>
 
 <style scoped>
@@ -375,7 +356,7 @@ onMounted(() => { chargerProduits() })
 }
 
 /* ══ SHELL ═══════════════════════════════════════════════ */
-.mp { min-height: 100vh; background: #f0f4f8; font-family: 'Segoe UI', system-ui, sans-serif; }
+.mp { min-height: 100vh; background: #050396fb; font-family: 'Segoe UI', system-ui, sans-serif; }
 
 /* ══ HERO ════════════════════════════════════════════════ */
 .hero {
@@ -386,19 +367,35 @@ onMounted(() => { chargerProduits() })
 
 .hero-bg        { position: absolute; inset: 0; z-index: 0; }
 .hero-photo     { width: 100%; height: 100%; object-fit: cover; min-height: 580px; }
-.hero-overlay   {
-  position: absolute; inset: 0;
+.hero-overlay {
+  position: absolute; 
+  inset: 0;
+  /* Dégradé plus "frais" : 
+     Le haut est presque transparent pour voir le ciel/port,
+     Le bas s'assombrit pour faire ressortir tes métriques blanches. */
   background: linear-gradient(
-    160deg,
-    rgba(2,14,35,.92)  0%,
-    rgba(4,26,60,.78)  35%,
-    rgba(8,50,90,.52)  65%,
-    rgba(2,14,35,.85) 100%
+    165deg,
+    rgba(6, 44, 170, 0.15) 0%,   /* Reflet de surface */
+    rgba(1, 70, 107, 0.822) 40%,    /* Teinte eau claire */
+    rgba(2, 62, 138, 0.6) 80%,     /* Profondeur pour le texte */
+    rgba(2, 14, 35, 0.85) 100%     /* Base solide pour la transition section suivante */
   );
+  backdrop-filter: saturate(1.2); /* Booste les couleurs de ta photo en dessous */
 }
-.hero-shimmer   {
-  position: absolute; bottom: 0; left: 0; right: 0; height: 140px;
-  background: linear-gradient(to top, rgba(0,180,216,.08), transparent);
+.hero-shimmer {
+  position: absolute; 
+  bottom: 0; 
+  left: 0; 
+  right: 0; 
+  height: 180px;
+  /* Effet "Vague de lumière" : un bleu turquoise très léger qui remonte */
+  background: linear-gradient(
+    to top, 
+    rgba(0, 180, 216, 0.2) 0%, 
+    rgba(144, 224, 239, 0.05) 50%, 
+    transparent 100%
+  );
+  pointer-events: none;
 }
 
 /* Vagues */
@@ -443,7 +440,7 @@ onMounted(() => { chargerProduits() })
 /* Titre */
 .hero-title-wrap { text-align: center; }
 .hero-eyebrow {
-  color: rgba(255,255,255,.35); font-size: .8rem; letter-spacing: .25em;
+  color: rgba(245, 229, 7, 0.795); font-size: .8rem; letter-spacing: .25em;
   text-transform: uppercase; margin-bottom: 12px;
 }
 .hero-h1 {
@@ -460,13 +457,27 @@ onMounted(() => { chargerProduits() })
 }
 @keyframes goldShift { to { background-position: 200% center; } }
 .hero-tagline {
-  color: rgba(255,255,255,.38); font-size: .88rem; font-style: italic;
+    font-size: clamp(2.4rem, 6vw, 4rem); font-weight: 900;
+  color: rgba(3, 247, 15, 0.38); font-size: .70rem; font-style: italic;
 }
 
 /* ── Barre de recherche ── */
+.search-grid {
+  width: 100%; 
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px; /* upgradé à gap-6 */
+}
+.search_wrap   .searchbar { /* plus utilisé */
+  flex: 1; min-width: 280px;
+}
+.search_wrap .searchbar {
+ flex: 1; min-width: 280px;
+}
+
 .searchbar {
-  width: 100%; max-width: 700px;
-  display: flex; align-items: center; flex-wrap: wrap; gap: 2px;
+  width: 100%;
+  display: flex; align-items: center;  gap: 2px;
   background: rgba(255,255,255,.07);
   border: 1px solid rgba(255,255,255,.15);
   backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
@@ -487,19 +498,27 @@ onMounted(() => { chargerProduits() })
 .sb-select {
   background: transparent; border: none; outline: none;
   color: rgba(255,255,255,.75); font-size: .85rem;
-  padding: 11px 16px; cursor: pointer; min-width: 155px;
+  padding: 11px 16px; cursor: pointer; min-width: 100px;
 }
 .sb-select option { background: #1e3a5f; color: white; }
 .sb-btn {
   background: linear-gradient(135deg, #f59e0b, #d97706);
-  color: #1a0e00; font-weight: 800; font-size: .85rem;
-  padding: 11px 26px; border-radius: 12px; border: none;
-  cursor: pointer; transition: all .2s; white-space: nowrap;
+  color: #1a0e00; font-weight: 800; font-size: .70rem;
+  padding: 11px 15px; border-radius: 12px; border: none;
+  cursor: pointer; transition: all .2s; white-space: nowrap; 
   box-shadow: 0 4px 16px rgba(245,158,11,.4);
   letter-spacing: .03em;
 }
 .sb-btn:hover { transform:translateY(-1px); box-shadow:0 6px 22px rgba(245,158,11,.55); }
-
+.sb-detect {
+  background: linear-gradient(135deg, #0b97f5, #1022c2);
+  color: #1a0e00; font-weight: 800; font-size: .85rem;
+  padding: 11px 18px; border-radius: 12px; border: none;
+  cursor: pointer; transition: all .2s; white-space: nowrap;
+  box-shadow: 0 4px 16px rgba(245,158,11,.4);
+  letter-spacing: .03em;
+}
+.sb-detect:hover { transform:translateY(-1px); box-shadow:0 6px 22px rgba(245,158,11,.55); }
 /* Métriques */
 .hero-metrics {
   display: flex; flex-wrap: wrap; justify-content: center;
@@ -512,7 +531,7 @@ onMounted(() => { chargerProduits() })
 }
 .metric-val.gold  { color: #fbbf24; }
 .metric-val.green { color: #34d399; }
-.metric-lbl { color:rgba(255,255,255,.3); font-size:.62rem; text-transform:uppercase; letter-spacing:.1em; }
+.metric-lbl { color:rgba(247, 244, 244, 0.877); font-size:.62rem; text-transform:uppercase; letter-spacing:.1em; }
 .metric-sep { width:1px; background:rgba(255,255,255,.1); align-self:stretch; }
 
 /* Scroll hint */
@@ -657,5 +676,28 @@ onMounted(() => { chargerProduits() })
   .cats-row     { order:2; width:100%; }
   .produits-zone { padding:16px 14px 56px; }
   .searchbar    { border-radius:13px; }
+}
+/* ── Unified Layout & Traditional Texture ──────────────────── */
+
+/* The main outer background: Deep, Traditional blue */
+.main-homepage-wrapper {
+  background-color: #0a0a0ae0; /* Base color of image_0.png */
+}
+
+/* This container applies the 'default.png' pattern to everything else */
+.textured-content-area {
+  position: relative;
+  /* ── Traditional Moroccan Zellige Texture (Your default.png) ── */
+  background-image: url('/path/to/default.png');
+  background-repeat: repeat;
+  background-size: 200px 200px; /* Adjust scale based on your default.png */
+  background-attachment: fixed; /* Parallax effect for elegance */
+  background-blend-mode: soft-light; /* Makes texture blend nicely */
+}
+
+/* Adjusting other components so they work over the texture */
+.textured-content-area :deep(section) {
+  position: relative;
+  z-index: 1;
 }
 </style>
