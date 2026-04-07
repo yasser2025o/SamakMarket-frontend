@@ -5,10 +5,11 @@
 
 import axios from 'axios'
 
+// ✅ AJOUTE l'adresse complète du serveur Backend (Port 3000)
 const api = axios.create({
-baseURL: '/api', // ← plus de localhost:3000
-headers: { 'Content-Type': 'application/json' },
-timeout: 30000,
+  baseURL: 'http://localhost:3000/api', 
+  headers: { 'Content-Type': 'application/json' },
+  timeout: 30000,
 })
 
 // ── Intercepteur REQUÊTE : ajoute le token JWT auto ───────────

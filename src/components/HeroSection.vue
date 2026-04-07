@@ -5,227 +5,180 @@
 ============================================================= -->
 <template>
   <section class="hero" aria-label="SamakMarket — Marché de poisson frais au Maroc">
-
-    <!-- ── Fond photo dynamique par ville ────────────────── -->
     <div class="hero-bg" aria-hidden="true">
-      <img
-        :src="heroPhoto"
-        :alt="`Marché de poisson frais ${villeLabel} — SamakMarket`"
-        class="hero-photo"
-        loading="eager"
-        fetchpriority="high"
-        width="1600" height="580"
-      />
+      <img :src="heroPhoto" class="hero-photo" loading="eager" fetchpriority="high" />
       <div class="hero-overlay"></div>
-      <div class="hero-shimmer"></div>
     </div>
 
-    <!-- Vagues décoratives -->
-    <div class="waves" aria-hidden="true">
-      <div class="w w1"></div>
-      <div class="w w2"></div>
-      <div class="w w3"></div>
+    <div class="shark-center-wrapper">
+      
     </div>
 
-    <!-- ── Contenu principal ──────────────────────────────── -->
-    <div class="hero-body" style="margin-bottom: 80px;">
+    <!-- <div class="mon-bloc-vide"></div> -->
 
-      <!-- Titre SEO H1 -->
-       <div class="hero-title-wrap">
-        <h1 class="hero-h1">
-          La Tradition de la <span class="hero-accent">Pêche Marocaine</span>
-        </h1>
-        <p class="hero-tagline">L'élégance de l'océan, direct de nos pêcheurs</p>
-      <!-- <ATPbtn/> -->
-       
-        
+    <div class="hero-body fade-in-content">
+      <div class="shark-glass-circle">
+        <img src="/dophin.png" alt="🐬 Samak Market" class="shark-hero-img" />
+      </div>
+      <h1 class="hero-h1">{{ t('hero.title') }}</h1>
+      
+      <div class="search-glass-gold">
+        <div class="input-section">
+          <span class="search-icon">🔍</span>
+          <input 
+            type="text" 
+            v-model="searchLocal" 
+            @input="onSearchInput"
+            :placeholder="i18n.t('hero.search_placeholder')" 
+            class="main-input"
+          />
+        </div>
+
+        <div class="divider-vertical"></div>
+
+        <div class="city-selector" @click.stop="toggleDropdown">
+          <div class="selector-trigger">
+            <span>{{ selectedVilleLabel }}</span>
+            <span class="chevron" :class="{ 'rotate': isOpen }">▾</span>
+          </div>
+
+          <transition name="fade-slide">
+            <div v-if="isOpen" class="dropdown-glass">
+              <div v-for="v in villes" :key="v.value" @click="selectVille(v)" class="dropdown-item">
+                {{ v.icon }} {{ i18n.t('villes.' + v.value) }}
+              </div>
+            </div>
+          </transition>
+        </div>
+
+        <button @click="$emit('search')" class="btn-gold-action">
+          {{ i18n.t('hero.search_btn') }}
+        </button>
       </div>
 
-      <!-- ── Barre de recherche (id pour TourGuide) ────────── -->
-      <div class="search-glass-gold" id="hero-searchbar">
-        <img src="/dophin.png" text-align: center alt="🐟 Samak Market" 
-         class="block mx-auto h-32 md:h-40 w-auto object-contain 
-              drop-shadow-xl transition-all duration-500 
-              group-hover:drop-shadow-2xl group-hover:-rotate-2">
-  <div class="input-section">
-    <span class="search-icon">🔍</span>
-    <div class="divider-vertical"></div>
-    <input 
-      v-model="searchLocal" 
-      placeholder="Sardine, thon, crevettes..." 
-      class="main-input"
-    />
-  </div>
-
-  <div class="divider-vertical"></div>
-
-  <div class="city-selector" @click.stop="toggleDropdown">
-    <div class="selector-trigger">
-      <span>{{ selectedVilleLabel }}</span>
-      <span class="chevron" :class="{ 'rotate': isOpen }">▾</span>
-    </div>
-
-    <transition name="fade-slide">
-      <div v-if="isOpen" class="dropdown-glass">
-        <div 
-          v-for="v in villes" 
-          :key="v.value" 
-          @click="selectVille(v)"
-          class="dropdown-item"
-        >
-          {{ v.icon }} {{ v.name }}
-        </div>
+      <div class="live-badge" role="status">
+        <span class="live-dot"></span>
+        <span>{{ i18n.t('hero.live_arrival') }} · {{ villeLabel }}</span>
       </div>
-    </transition>
-  </div>
 
-  <button @click="$emit('search')" class="btn-gold-action">
-    Chercher
-  </button>
-</div>
-<div class="live-badge" role="status">
-          <span class="live-dot"></span>
-          <span>ARRIVAGE EN DIRECT · {{ villeLabel }}</span>
-        </div>
-      <!-- ── 4 cartes USP (id pour TourGuide) ──────────────── -->
-      <div class="usp-grid" id="hero-usp" aria-label="Avantages SamakMarket">
-
-        <div class="usp-card usp-green" role="img" aria-label="100% frais, Tangier Direct">
-          <div class="usp-ico-wrap usp-ico-green">
-            <span aria-hidden="true">🕒</span>
-          </div>
+      <!-- <div class="usp-grid" id="hero-usp">
+        <div class="usp-card usp-green">
+          <div class="usp-ico-wrap usp-ico-green"><span>🕒</span></div>
           <div>
-            <p class="usp-title usp-t-green">100% Frais</p>
-            <p class="usp-sub usp-s-green">Tangier Direct</p>
+            <p class="usp-title usp-t-green">{{ i18n.t('hero.usp_fresh_title') }}</p>
+            <p class="usp-sub usp-s-green">{{ villeLabel }} Direct</p>
           </div>
         </div>
 
-        <div class="usp-card usp-cyan" role="img" aria-label="Port Direct, 24h Garantie">
-          <div class="usp-ico-wrap usp-ico-cyan">
-            <span aria-hidden="true">🐟</span>
-          </div>
+        <div class="usp-card usp-cyan">
+          <div class="usp-ico-wrap usp-ico-cyan"><span>🐟</span></div>
           <div>
-            <p class="usp-title usp-t-cyan">Port Direct</p>
+            <p class="usp-title usp-t-cyan">{{ i18n.t('hero.usp_port_title') }}</p>
             <p class="usp-sub usp-s-cyan">24h Garantie</p>
           </div>
         </div>
+      </div>  -->
 
-        <div class="usp-card usp-orange" role="img" aria-label="Marché Central, Pêcheurs Locaux">
-          <div class="usp-ico-wrap usp-ico-orange">
-            <span aria-hidden="true">🛒</span>
-          </div>
-          <div>
-            <p class="usp-title usp-t-orange">Marché Central</p>
-            <p class="usp-sub usp-s-orange">Pêcheurs Locaux</p>
-          </div>
-        </div>
-
-        <div class="usp-card usp-purple" role="img" aria-label="Express, 2h Maximum">
-          <div class="usp-ico-wrap usp-ico-purple">
-            <span aria-hidden="true">🚀</span>
-          </div>
-          <div>
-            <p class="usp-title usp-t-purple">Express</p>
-            <p class="usp-sub usp-s-purple">2h Maximum</p>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- ── Métriques ──────────────────────────────────────── -->
-      <div class="hero-metrics" aria-label="Statistiques SamakMarket">
+      <div class="hero-metrics">
         <div class="metric">
-          <span class="metric-val green" aria-label="100% frais du jour">100%</span>
-          <span class="metric-lbl">Frais du jour</span>
+          <span class="metric-val green">100%</span>
+          <span class="metric-lbl">{{ i18n.t('hero.fresh_day') }}</span>
         </div>
-        <div class="metric-sep" aria-hidden="true"></div>
+        <div class="metric-sep"></div>
         <div class="metric">
-          <span class="metric-val gold" aria-label="Zéro commission">Zéro</span>
+          <span class="metric-val gold">Zéro</span>
           <span class="metric-lbl">Commission</span>
         </div>
-        <!-- <div class="metric-sep" aria-hidden="true"></div>
-        <div class="metric">
-          <span class="metric-val" aria-label="Nombre de produits">+{{ totalProduits || '—' }}</span>
-          <span class="metric-lbl">Poissons</span>
-        </div> -->
-        <div class="metric-sep" aria-hidden="true"></div>
-        <div class="metric">
-          <span class="metric-val green" aria-label="Commande directe WhatsApp">Direct</span>
-          <span class="metric-lbl">WhatsApp</span>
-        </div>
-      </div>
 
-      <!-- Scroll hint -->
-      <div class="scroll-hint" aria-hidden="true">
-        <span>Découvrir les offres</span>
-        <svg width="14" height="10" viewBox="0 0 14 18" fill="none" aria-hidden="true">
-          <path d="M7 1v16M7 17L1 11M7 17l6-6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-        </svg>
       </div>
 
     </div>
-     
   </section>
 </template>
-
 <script setup>
-import { ref, computed } from 'vue'
-import ATPbtn from './ATPbtn.vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { useI18nStore } from '../stores/i18n'
+// Import des fichiers standardisés
+import { fr } from '../locales/fr'
+import { ar } from '../locales/ar'
+import { darija } from '../locales/darija'
+import { amazigh } from '../locales/amazigh'
+
+const i18n = useI18nStore()
+
 const props = defineProps({
-  heroPhoto:     { type: String, default: '/images/villes/Default.jpg' },
-  totalProduits: { type: [Number, String], default: 0 },
-  modelSearch:   { type: String, default: '' },
-  modelVille:    { type: String, default: 'ALL' },
+  heroPhoto: { type: String, default: '/images/Villes/default.jpg' },
+  modelSearch: { type: String, default: '' },
+  modelVille: { type: String, default: 'ALL' },
 })
 
 const emit = defineEmits(['search', 'update:modelSearch', 'update:modelVille', 'villeSelect'])
 
+const allLocales = { fr, ar, darija, amazigh }
+
+// Système de secours (Fallback) si la langue n'est pas trouvée
+const currentTexts = computed(() => {
+  return allLocales[i18n.lang] || allLocales.fr
+})
+
+// Accès sécurisé aux clés
+const t = (path) => {
+  const keys = path.split('.')
+  let result = currentTexts.value
+  for (const key of keys) {
+    if (result[key]) {
+      result = result[key]
+    } else {
+      return path // Retourne la clé si la traduction manque
+    }
+  }
+  return result
+}
+
+const getVilleName = (val) => t(`villes.${val}`)
+
+// --- États locaux ---
 const searchLocal = ref(props.modelSearch)
 const villeLocal  = ref(props.modelVille)
+const isOpen      = ref(false)
 
-const villeLabel = computed(() => villeLocal.value === 'ALL' ? 'au Maroc' : `à ${villeLocal.value}`)
-
-let timer = null
-const onSearchInput = () => {
-  clearTimeout(timer)
-  emit('update:modelSearch', searchLocal.value)
-  timer = setTimeout(() => emit('search'), 450)
-}
-
-const onVilleChange = () => {
-  emit('update:modelVille', villeLocal.value)
-  emit('villeSelect', villeLocal.value)
-}
-const isOpen = ref(false);
-const toggleDropdown = () => (isOpen.value = !isOpen.value);
-const closeDropdown = () => (isOpen.value = false);
+const villeLabel = computed(() => getVilleName(villeLocal.value))
 
 const villes = [
-  { value: 'ALL', name: 'Villes', icon: '📍' },
-  { value: 'Tanger', name: 'Tanger', icon: '🌊' },
-  { value: 'Casablanca', name: 'Casablanca', icon: '🏙️' },
-  { value: 'Agadir', name: 'Agadir', icon: '🏖️' },
-  { value: 'Rabat', name: 'Rabat', icon: '🏛️' },
-  { value: 'Dakhla', name: 'Dakhla', icon: '🏜️' },
-  { value: 'Safi', name: 'Safi', icon: '⚓' },
-  { value: 'Nador', name: 'Nador', icon: '🐟' }
-];
+  { value: 'ALL', icon: '📍' },
+  { value: 'Tanger', icon: '🌊' },
+  { value: 'Casablanca', icon: '🏙️' },
+  { value: 'Agadir', icon: '🏖️' },
+  { value: 'Rabat', icon: '🏛️' },
+  { value: 'Dakhla', icon: '🏜️' },
+  { value: 'Safi', icon: '⚓' },
+  { value: 'Nador', icon: '🐟' }
+]
 
 const selectedVilleLabel = computed(() => {
-  const found = villes.find(v => v.value === villeLocal.value);
-  return found ? `${found.icon} ${found.name}` : '📍 Villes';
-});
+  const found = villes.find(v => v.value === villeLocal.value)
+  return `${found?.icon || '📍'} ${villeLabel.value}`
+})
 
+const toggleDropdown = () => { isOpen.value = !isOpen.value }
 const selectVille = (ville) => {
   villeLocal.value = ville.value
   isOpen.value = false
-  onVilleChange() // Appelle ta fonction existante
+  emit('update:modelVille', villeLocal.value)
+  emit('villeSelect', villeLocal.value)
 }
 
-// Fermer le menu si on clique ailleurs
-window.addEventListener('click', (e) => {
-  if (!e.target.closest('.custom-select-wrapper')) isOpen.value = false
-})
+const handleClickOutside = (e) => {
+  if (!e.target.closest('.city-selector')) isOpen.value = false
+}
+
+onMounted(() => window.addEventListener('click', handleClickOutside))
+onUnmounted(() => window.removeEventListener('click', handleClickOutside))
+
+const onSearchInput = () => {
+  emit('update:modelSearch', searchLocal.value)
+  // Déclenchement de la recherche
+}
 </script>
 
 <style scoped>
@@ -247,7 +200,7 @@ window.addEventListener('click', (e) => {
 
 .hero-shimmer {
   position: absolute; bottom: 0; left: 0; right: 0; height: 180px;
-  background: linear-gradient(to top, rgba(0,180,216,0.2) 0%, rgba(144,224,239,0.05) 50%, transparent 100%);
+  background: linear-gradient(to top, rgba(0,180,216,0.2) 0%, rgba(144,224,239,0.05) 50%, transparent 50%);
   pointer-events: none;
 }
 .waves { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
@@ -267,19 +220,32 @@ window.addEventListener('click', (e) => {
 }
 
 /* ── Body ───────────────────────────────────────────────────── */
-.hero-body {
+/* .hero-body {
   position: relative; z-index: 2; flex: 1;
   max-width: 860px; margin: 0 auto; width: 100%;
   padding: 60px 24px 36px;
   display: flex; flex-direction: column; align-items: center; gap: 28px;
+} */
+ .hero-body {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px; /* Espace entre les éléments */
 }
 
 /* ── Titre ──────────────────────────────────────────────────── */
 .hero-title-wrap { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 30px; }
 .hero-h1 {
   font-size: clamp(2.4rem, 6vw, 4rem); font-weight: 900;
-  color: white; line-height: 1.1; margin: 0;
-  text-shadow: 0 2px 40px rgba(0,0,0,.5);
+  color: rgba(4, 87, 155, 0.918); line-height: 1.1; margin: 0;
+  text-shadow: 0 2px 40px rgba(27, 27, 27, 0.568);
+   background: rgba(255, 255, 255, 0.014); /* Blanc à 20% d'opacité */
+    backdrop-filter: blur(10px);          /* Flou d'arrière-plan */
+    border-radius: 8px;                   /* Optionnel : arrondir les coins */
+    padding: 20px;
+    text-align: center;
  
 }
 .hero-accent {
@@ -380,8 +346,8 @@ window.addEventListener('click', (e) => {
 .hero-metrics { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 36px; margin-top: -4px; }
 .metric { display:flex; flex-direction:column; align-items:center; gap:3px; }
 .metric-val { color: white; font-size: 1.6rem; font-weight: 900; line-height: 1; font-variant-numeric: tabular-nums; }
-.metric-val.gold  { color: #fbbf24; }
-.metric-val.green { color: #34d399; }
+.metric-val.gold  { color: #026af1; }
+.metric-val.green { color: #da870b; }
 .metric-lbl { color:rgba(247,244,244,0.877); font-size:.62rem; text-transform:uppercase; letter-spacing:.1em; }
 .metric-sep { width:1px; background:rgba(255,255,255,.1); align-self:stretch; }
 
@@ -522,7 +488,7 @@ window.addEventListener('click', (e) => {
   position: relative;
   flex: 1;
   cursor: pointer;
-  color: #fcd34d;
+  color: #fbfcfb;
   font-weight: 600;
   font-size: 0.9rem;
 }
@@ -583,5 +549,73 @@ window.addEventListener('click', (e) => {
   .search-glass-gold { flex-direction: column; gap: 10px; padding: 15px; }
   .divider-vertical { display: none; }
   .btn-gold-action { width: 100%; }
+}
+/* Le bloc qui crée l'espace pour voir l'arrière-plan */
+.mon-bloc-vide {
+  /* 50vh = 50% de la hauteur de l'écran. 
+     Tu peux mettre 40vh si tu veux que le texte commence un peu plus haut */
+  height: 45vh; 
+  width: 80%;
+  pointer-events: none; /* Pour que l'utilisateur puisse cliquer "à travers" si besoin */
+}
+
+/* On s'assure que le contenu principal suit le saut */
+
+
+/* Animation douce pour l'apparition du contenu */
+.fade-in-content {
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.shark-center-wrapper {
+  position: absolute;
+  bottom: 29em;   /* ← distance depuis le bas du hero */
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.shark-glass-circle {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 217, 0, 0.164);
+  border-radius: 50%;
+  padding: 0.1rem;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.35),
+    0 0 40px rgba(255, 215, 0, 0.12),
+    inset 0 1px 0 rgba(255,255,255,0.15);
+  transition: transform 0.5s ease, box-shadow 0.5s ease;
+}
+
+.shark-glass-circle:hover {
+  transform: translateY(-6px) scale(1.04);
+  box-shadow:
+    0 16px 48px rgba(0, 0, 0, 0.4),
+    0 0 60px rgba(255, 215, 0, 0.2);
+}
+
+.shark-hero-img {
+  width: 95px;
+  height: 100px;
+  object-fit: contain;
+  display: block;
+  filter: drop-shadow(0 4px 16px rgba(0,0,0,0.5));
+  animation: sharkFloat 3s ease-in-out infinite;
+}
+
+@keyframes sharkFloat {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
 }
 </style>

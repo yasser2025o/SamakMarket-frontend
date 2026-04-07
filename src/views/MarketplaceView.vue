@@ -4,207 +4,126 @@
   GPS : UNIQUEMENT dans VendeursProches, pas dans les filtres
 ============================================================= -->
 <template>
-  <!-- //<div class="mp"> -->
-    <NavBar />
+  <NavBar />
 
-    <!-- ═══════════════════════════════════════════════════
-         HERO
-    ═══════════════════════════════════════════════════ -->
-
-<div class="main-homepage-wrapper">
-    
-    <HeroSection
-  :hero-photo="heroPhoto"
-  :total-produits="store.pagination.total"
-  v-model:model-search="filtres.search"
-  v-model:model-ville="filtres.city"
-  @search="chargerProduits"
-  @ville-select="onVilleSelect"
+  <div class="main-homepage-wrapper">
+   <HeroSection 
+  v-model:modelVille="filtres.city"
+  :countsByCity="statsVilles" 
+  @search="rechargerProduits"
 />
-
-    <!-- <div class="textured-content-area">
-      <PoissonGrillade />
-      </div> -->
-
   </div>
 
-    <!-- ═══════════════════════════════════════════════════
-         PROMOS DÉFILANTES
-    ═══════════════════════════════════════════════════ -->
-    <!-- <ProductPromo /> -->
-     <VagueduJour /> 
-    <!-- ═══════════════════════════════════════════════════
-         VENDEURS PROCHES — GPS ici seulement
-    ═══════════════════════════════════════════════════ -->
-    <VendeursProches />
+  <!-- <VagueduJour />  -->
+  <VendeursProches />
 
-    <!-- ═══════════════════════════════════════════════════
-         TOOLBAR — CATÉGORIES + TOGGLE VUE
-    ═══════════════════════════════════════════════════ -->
-    <div class="toolbar">
-
-      <!-- Chips catégories -->
-      <div class="cats-row">
-        <button
-          @click="filtrerCategorie('')"
-          :class="['chip', filtres.category === '' && 'chip-on']"
-        >
-          🐟 Tout
-        </button>
-        <button
-          v-for="cat in categories" :key="cat.valeur"
-          @click="filtrerCategorie(cat.valeur)"
-          :class="['chip', filtres.category === cat.valeur && 'chip-on']"
-        >
-          {{ cat.emoji }} {{ cat.label }}
-        </button>
-      </div>
-
-      <!-- Droite : compteur + toggle vue -->
-      <!-- =============================================================
-  TOOLBAR VIEW SWITCHER (PRO UX)
-============================================================= -->
-
-<div class="toolbar-right flex items-center gap-4">
-
-  <!-- COUNT -->
-  <span class="count-txt text-sm text-gray-600">
-    <strong class="text-gray-900">{{ store.pagination.total }}</strong> produits
-  </span>
-
-  <!-- VIEW BUTTONS -->
-  <div class="vue-btns flex items-center bg-gray-100 rounded-xl p-1 shadow-inner">
-
-    <!-- 2 colonnes -->
-    <button
-      @click="vue='2'"
-      :class="btnClass('2')"
-      title="2 colonnes"
-    >
-      <svg viewBox="0 0 20 20" fill="currentColor">
-        <rect x="1" y="1" width="8" height="18" rx="2"/>
-        <rect x="11" y="1" width="8" height="18" rx="2"/>
-      </svg>
-    </button>
-
-    <!-- 3 colonnes -->
-    <button
-      @click="vue='3'"
-      :class="btnClass('3')"
-      title="3 colonnes"
-    >
-      <svg viewBox="0 0 20 20" fill="currentColor">
-        <rect x="1" y="1" width="5" height="18" rx="1.5"/>
-        <rect x="7.5" y="1" width="5" height="18" rx="1.5"/>
-        <rect x="14" y="1" width="5" height="18" rx="1.5"/>
-      </svg>
-    </button>
-
-    <!-- 4 colonnes -->
-    <button
-      @click="vue='4'"
-      :class="btnClass('4')"
-      title="4 colonnes"
-    >
-      <svg viewBox="0 0 20 20" fill="currentColor">
-        <rect x="1" y="1" width="3.5" height="18" rx="1"/>
-        <rect x="5.5" y="1" width="3.5" height="18" rx="1"/>
-        <rect x="10" y="1" width="3.5" height="18" rx="1"/>
-        <rect x="14.5" y="1" width="3.5" height="18" rx="1"/>
-      </svg>
-    </button>
-
-    <!-- LISTE -->
-    <button
-      @click="vue='liste'"
-      :class="btnClass('liste')"
-      title="Liste"
-    >
-      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
-        <line x1="2" y1="5"  x2="18" y2="5"/>
-        <line x1="2" y1="10" x2="18" y2="10"/>
-        <line x1="2" y1="15" x2="18" y2="15"/>
-      </svg>
-    </button>
-</div>
-  </div>
-
-</div>
-
-    <!-- Pills filtres actifs -->
-    <div v-if="filtres.city || filtres.category" class="active-filters">
-      <span v-if="filtres.city" class="af-pill">
-        📍 {{ filtres.city }}
-        <button @click="filtres.city=''; chargerProduits()">×</button>
-      </span>
-      <span v-if="filtres.category" class="af-pill">
-        {{ categories.find(c=>c.valeur===filtres.category)?.emoji }}
-        {{ filtres.category }}
-        <button @click="filtrerCategorie('')">×</button>
-      </span>
-      <button class="af-reset" @click="toutReset">Tout effacer</button>
+  <div class="toolbar">
+    <div class="cats-row">
+      <button
+        @click="filtrerCategorie('')"
+        :class="['chip', filtres.category === '' && 'chip-on']"
+      >
+        🐟 {{ i18n.t('common.all') }}
+      </button>
+      <button
+        v-for="cat in categories" :key="cat.valeur"
+        @click="filtrerCategorie(cat.valeur)"
+        :class="['chip', filtres.category === cat.valeur && 'chip-on']"
+      >
+        {{ cat.emoji }} {{ cat.label }}
+      </button>
     </div>
 
-    <!-- ═══════════════════════════════════════════════════
-         GRILLE PRODUITS
-    ═══════════════════════════════════════════════════ -->
-    <main class="produits-zone">
+    <div class="toolbar-right flex items-center gap-4">
+      <span class="count-txt text-sm text-gray-600">
+        <strong class="text-gray-900">{{ store.pagination.total }}</strong> {{ i18n.t('common.products') }}
+      </span>
 
-      <!-- Chargement -->
-      <div v-if="store.chargement" class="etat">
-        <div class="fish-bounce">🐟</div>
-        <p class="etat-txt">Chargement des produits...</p>
+      <div class="vue-btns flex items-center bg-gray-100 rounded-xl p-1 shadow-inner">
+        <button @click="vue='2'" :class="btnClass('2')" :title="i18n.t('toolbar.view_2')">
+          <svg viewBox="0 0 20 20" fill="currentColor"><rect x="1" y="1" width="8" height="18" rx="2"/><rect x="11" y="1" width="8" height="18" rx="2"/></svg>
+        </button>
+
+        <button @click="vue='3'" :class="btnClass('3')" :title="i18n.t('toolbar.view_3')">
+          <svg viewBox="0 0 20 20" fill="currentColor"><rect x="1" y="1" width="5" height="18" rx="1.5"/><rect x="7.5" y="1" width="5" height="18" rx="1.5"/><rect x="14" y="1" width="5" height="18" rx="1.5"/></svg>
+        </button>
+
+        <button @click="vue='4'" :class="btnClass('4')" :title="i18n.t('toolbar.view_4')">
+          <svg viewBox="0 0 20 20" fill="currentColor"><rect x="1" y="1" width="3.5" height="18" rx="1"/><rect x="5.5" y="1" width="3.5" height="18" rx="1"/><rect x="10" y="1" width="3.5" height="18" rx="1"/><rect x="14.5" y="1" width="3.5" height="18" rx="1"/></svg>
+        </button>
+
+        <button @click="vue='liste'" :class="btnClass('liste')" :title="i18n.t('toolbar.view_list')">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><line x1="2" y1="5" x2="18" y2="5"/><line x1="2" y1="10" x2="18" y2="10"/><line x1="2" y1="15" x2="18" y2="15"/></svg>
+        </button>
       </div>
+    </div>
+  </div>
 
-      <!-- Erreur -->
-      <div v-else-if="store.erreur" class="etat">
-        <div class="etat-ico">😕</div>
-        <p class="etat-err">{{ store.erreur }}</p>
-        <button @click="chargerProduits" class="btn-action">Réessayer</button>
-      </div>
+  <div v-if="filtres.city || filtres.category" class="active-filters">
+    <span v-if="filtres.city" class="af-pill">
+      📍 {{ filtres.city }}
+      <button @click="filtres.city=''; chargerProduits()">×</button>
+    </span>
+    <span v-if="filtres.category" class="af-pill">
+      {{ categories.find(c=>c.valeur===filtres.category)?.emoji }}
+      {{ filtres.category }}
+      <button @click="filtrerCategorie('')">×</button>
+    </span>
+    <button class="af-reset" @click="toutReset">{{ i18n.t('common.clear_all') }}</button>
+  </div>
 
-      <!-- Vide -->
-      <div v-else-if="store.produits.length === 0" class="etat">
-        <div class="etat-ico">🔍</div>
-        <p class="etat-vide">Aucun produit trouvé</p>
-        <p class="etat-sous">Essayez d'autres filtres</p>
-        <button @click="toutReset" class="btn-action mt-3">Effacer les filtres</button>
-      </div>
+  <main class="produits-zone">
+    <div v-if="store.chargement" class="etat">
+      <div class="fish-bounce">🐟</div>
+      <p class="etat-txt">{{ i18n.t('common.loading') }}</p>
+    </div>
 
-      <!-- Grille -->
-      <div v-else :class="grilleClass">
-        <ProductCard
-          v-for="produit in store.produits"
-          :key="produit.id"
-          :produit="produit"
-          :vue-liste="vue === 'liste'"
-        />
-      </div>
+    <div v-else-if="store.erreur" class="etat">
+      <div class="etat-ico">😕</div>
+      <p class="etat-err">{{ i18n.t('common.error') }}</p>
+      <button @click="chargerProduits" class="btn-action">{{ i18n.t('common.retry') }}</button>
+    </div>
 
-      <!-- Pagination -->
-      <div v-if="store.pagination.pages > 1" class="pagination">
-        <button
-          @click="changerPage(store.pagination.page - 1)"
-          :disabled="store.pagination.page === 1"
-          class="pg-btn"
-        >← Précédent</button>
+    <div v-else-if="store.produits.length === 0" class="etat">
+      <div class="etat-ico">🔍</div>
+      <p class="etat-vide">{{ i18n.t('common.no_results') }}</p>
+      <p class="etat-sous">{{ i18n.t('common.try_filters') }}</p>
+      <button @click="toutReset" class="btn-action mt-3">{{ i18n.t('common.reset_filters') }}</button>
+    </div>
 
-        <button
-          v-for="p in store.pagination.pages" :key="p"
-          @click="changerPage(p)"
-          :class="['pg-btn', p === store.pagination.page && 'pg-on']"
-        >{{ p }}</button>
+    <div v-else :class="grilleClass">
+      <ProductCard
+        v-for="produit in store.produits"
+        :key="produit.id"
+        :produit="produit"
+        :vue-liste="vue === 'liste'"
+      />
+    </div>
 
-        <button
-          @click="changerPage(store.pagination.page + 1)"
-          :disabled="store.pagination.page === store.pagination.pages"
-          class="pg-btn"
-        >Suivant →</button>
-      </div>
-    </main>
-    <FooterSamak />
-  <!-- </div> -->
+    <div v-if="store.pagination.pages > 1" class="pagination">
+      <button
+        @click="changerPage(store.pagination.page - 1)"
+        :disabled="store.pagination.page === 1"
+        class="pg-btn"
+      >← {{ i18n.t('common.prev') }}</button>
+
+      <button
+        v-for="p in store.pagination.pages" :key="p"
+        @click="changerPage(p)"
+        :class="['pg-btn', p === store.pagination.page && 'pg-on']"
+      >{{ p }}</button>
+
+      <button
+        @click="changerPage(store.pagination.page + 1)"
+        :disabled="store.pagination.page === store.pagination.pages"
+        class="pg-btn"
+      >{{ i18n.t('common.next') }} →</button>
+    </div>
+  </main>
+
+  <FooterSamak />
   <ChatBot />
+  <CartSystem />
 </template>
 
 <script setup>
@@ -218,7 +137,35 @@ import VendeursProches from '../components/VendeursProches.vue'
 import FooterSamak  from '../components/FooterSamak.vue'
 import ChatBot      from '../components/ChatBot.vue'
 import VagueduJour   from '../components/VagueduJour.vue'
+import CartSystem from '../components/CartSystem.vue'
 //import PoissonGrillade from '../components/PoissonGrillade.vue'
+import { useI18nStore } from '../stores/i18n'
+// 1. Déclare la variable pour les compteurs
+const statsVilles = ref({
+  'Tanger': 0,
+  'Casablanca': 0,
+  'Agadir': 0,
+  'ALL': 0
+})
+
+// 2. Déclare la fonction de recherche
+const rechargerProduits = () => {
+  console.log("Recherche lancée...")
+  // Ici, appelle la fonction de ton store qui charge les produits
+  // ex: productStore.chargerProduits()
+}
+
+// Optionnel : Exemple pour remplir statsVilles au chargement
+onMounted(() => {
+  // Simule ou récupère les vraies données
+  statsVilles.value = {
+    'Tanger': 12,
+    'Casablanca': 5,
+    'Agadir': 3,
+    'ALL': 20
+  }
+})
+const i18n = useI18nStore()
 const btnClass = (type) => [
   'vb w-9 h-9 flex items-center justify-center rounded-lg transition-all duration-200',
   'text-gray-500 hover:text-blue-700 hover:bg-white',
@@ -249,7 +196,7 @@ const onVilleSelect = () => {
   chargerProduits()
 }
 // ── Vue grille ──────────────────────────────────────────────
-const vue = ref('4')
+const vue = ref(2)
 const grilleClass = computed(() => ({
   liste: 'flex flex-col gap-3',
   '2':   'grid grid-cols-1 sm:grid-cols-2 gap-5',
@@ -261,15 +208,31 @@ const grilleClass = computed(() => ({
 const filtres = ref({ search:'', city:'', category:'', page:1, limit:12 })
 
 const categories = [
-  { valeur:'Sardine',   label:'Sardine',   emoji:'🐟' },
-  { valeur:'Thon',      label:'Thon',      emoji:'🐠' },
-  { valeur:'Crevette',  label:'Crevette',  emoji:'🦐' },
-  { valeur:'Mérou',     label:'Mérou',     emoji:'🐡' },
-  { valeur:'Homard',    label:'Homard',    emoji:'🦞' },
-  { valeur:'Capitaine', label:'Capitaine', emoji:'🐟' },
-  { valeur:'Dorade',    label:'Dorade',    emoji:'🐠' },
-  { valeur:'Calamar',   label:'Calamar',   emoji:'🦑' },
-]
+  { valeur: 'Sardine', label: 'سردين / Sardine', emoji: '🐟' },
+  { valeur: 'Pageot', label: 'باجو / Pageot', emoji: '🐠' },
+  { valeur: 'Merlan', label: 'ميرلا / Merlan', emoji: '🐟' },
+  { valeur: 'Thon', label: 'طون / Thon', emoji: '🐠' },
+  { valeur: 'Crevette', label: 'قيمرون / Crevette', emoji: '🦐' },
+  { valeur: 'Mérou', label: 'ميرو / Mérou', emoji: '🐡' },
+  { valeur: 'Homard', label: 'همر / Homard', emoji: '🦞' },
+  { valeur: 'Capitaine', label: 'كابيتان / Capitaine', emoji: '🐟' },
+  { valeur: 'Dorade', label: 'دوراد / Dorade', emoji: '🐠' },
+  { valeur: 'Calamar', label: 'كلامار / Calamar', emoji: '🦑' },
+  { valeur: 'Poulpe', label: 'روكاي / Poulpe', emoji: '🐙' },
+  { valeur: 'Espadon', label: 'بوسيف / Espadon', emoji: '🗡️' },
+  { valeur: 'Loup', label: 'درعي / Loup', emoji: '🐟' },
+  { valeur: 'Sole', label: 'صول / Sole', emoji: '🐠' },
+  { valeur: 'Saumon', label: 'سومو / Saumon', emoji: '🍣' },
+  { valeur: 'Bar', label: 'درعي / Bar', emoji: '🐟' },
+  { valeur: 'Saint-Pierre', label: 'سان پير / St-Pierre', emoji: '🐠' },
+  { valeur: 'Turbot', label: 'موسى / Turbot', emoji: '🐟' },
+  { valeur: 'Huitres', label: 'محار / Huîtres', emoji: '🦪' },
+  { valeur: 'Crevette Royale', label: 'قيمرون ملكي / Crevette Royale', emoji: '🦐' },
+  { valeur: 'Lotte', label: 'بوزروك / Lotte', emoji: '🐟' },
+  { valeur: 'Araignée', label: 'عنكبوت البحر / Araignée de mer', emoji: '🦀' }
+];
+  
+
 
 // ── Fonctions ────────────────────────────────────────────────
 const chargerProduits = () => {

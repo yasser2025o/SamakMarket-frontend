@@ -7,7 +7,7 @@
       <div class="wave w2"></div>
     </div>
 
-    <div class="register-card">
+    <div class="register-card">635
 
       <!-- Logo -->
       <div class="text-center mb-6">
@@ -50,7 +50,7 @@
             <input v-model="formulaire.phone" type="tel"
               placeholder="0612345678" class="inp" />
           </div>
-          <div class="field">
+          <div class="fi eld">
             <label>WhatsApp</label>
             <input v-model="formulaire.whatsapp" type="tel"
               placeholder="212612345678" class="inp" />

@@ -234,6 +234,7 @@
            PAGE : VENDEURS
       ──────────────────────────────────────────────────── -->
       <div v-show="page === 'vendeurs'" class="page-body">
+       
 
         <!-- Barre recherche -->
         <div class="search-row">
@@ -438,6 +439,8 @@
         
         
           <div class="prix-stat">
+             <!-- ... tes composants existants ... -->
+  <OperationalDashboard />
           <ResetPasswordAdmin />
           </div>
            <div class="prix-stat">
@@ -446,17 +449,27 @@
           <!-- <WhatsAppAdmin /> -->
            <FlashAdmin />
           </div> 
+          <div class="prix-stat"></div>
+        <AdminOrders />
+         
+
+       </div>
+     
+
        
-      </div> 
 
     </div><!-- /content --> 
   </div><!-- /shell -->
 </template>
 
+
+
+
+
 <script setup>
 import { useAuthStore } from '@/stores/auth'
 import { useAdminStore } from '@/stores/admin'
-
+import AdminOrders from '../components/admin/AdminOrders.vue'
 import { ref, reactive, computed, onMounted } from 'vue'
 import api from '@/services/api'
 const adminStore = useAdminStore()
@@ -465,6 +478,7 @@ import FbPostAdmin from '../components/admin/FbPostAdmin.vue'
 import SocialPostAdmin from '../components/admin/SocialpostAdmin.vue'
 import WhatsAppAdmin from '../components/admin/WhatsAppAdmin.vue'
 import FlashAdmin from '../components/admin/FlashAdmin.vue'
+import OperationalDashboard from '../components/admin/OperationalDashboard.vue'
 // ── Navigation sidebar ────────────────────────────────────────
 const page     = ref('overview')
 const menuOpen = ref(false)

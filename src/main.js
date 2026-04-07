@@ -10,7 +10,7 @@
 
 import { createApp } from 'vue'       // Fonction pour créer une app Vue
 import { createPinia } from 'pinia'   // Gestionnaire d'état global
-
+import { createHead } from '@vueuse/head'
 import App from './App.vue'           // Composant racine
 import router from './router/index.js' // Système de navigation
 import './style.css'                   // Styles Tailwind + globaux
@@ -28,3 +28,6 @@ app.use(router)
 
 // 4. Monter l'application dans la balise <div id="app"> de index.html
 app.mount('#app')
+
+
+app.use(createHead())

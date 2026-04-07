@@ -1,5 +1,131 @@
 <template>
-  <section class="grillade-section" aria-label="Poisson Grillade — La Tradition Marocaine">
+  <html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animation Navbar SamakMarket</title>
+    <style>
+        /* --- Styles de Base --- */
+        body { margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; }
+
+        /* --- Navbar Pro --- */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 50px;
+            background-color: #ffffff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            animation: fadeInNavbar 0.8s ease-out forwards; /* Arrivée fluide de la navbar */
+        }
+
+        /* --- Animation d'entrée de la navbar --- */
+        @keyframes fadeInNavbar {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- Logo SamakMarket --- */
+        .logo {
+            font-size: 28px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        /* --- Partie "Samak" (Bleu Pro) --- */
+        .samak {
+            color: #1a73e8; /* Bleu Technologique */
+            opacity: 0;
+            animation: popIn 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
+            animation-delay: 0.5s; /* Attend l'arrivée de la navbar */
+            position: relative;
+        }
+
+        /* --- Partie "Market" (Gris Acier) --- */
+        .market {
+            color: #5f6368; /* Gris Professionnel */
+            opacity: 0;
+            animation: slideInRight 0.6s ease-out forwards;
+            animation-delay: 1s; /* Arrive après "Samak" */
+        }
+
+        /* --- Icone Poisson Abstract (Clin d'oeil) --- */
+        .fish-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 8px;
+            fill: #1a73e8;
+            opacity: 0;
+            transform: scale(0);
+            animation: fishPop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            animation-delay: 0.3s; /* Arrive juste avant le texte */
+        }
+
+        /* --- Animations Clés --- */
+
+        /* Effet "PopIn" pour Samak */
+        @keyframes popIn {
+            0% { opacity: 0; transform: scale(0.5); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        /* Effet "SlideIn" pour Market */
+        @keyframes slideInRight {
+            0% { opacity: 0; transform: translateX(30px); }
+            100% { opacity: 1; transform: translateX(0); }
+        }
+
+        /* Effet "FishPop" pour l'icone */
+        @keyframes fishPop {
+            0% { opacity: 0; transform: scale(0) rotate(-45deg); }
+            70% { opacity: 1; transform: scale(1.2) rotate(10deg); }
+            100% { opacity: 1; transform: scale(1) rotate(0deg); }
+        }
+
+        /* --- Soulignement Animé au Hover (Optionnel) --- */
+        .logo:hover .samak::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 3px;
+            background-color: #1a73e8;
+            bottom: -5px;
+            left: 0;
+            border-radius: 2px;
+            animation: underline 0.3s ease-out forwards;
+        }
+
+        @keyframes underline {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="logo">
+            <svg class="fish-icon" viewBox="0 0 24 24">
+                <path d="M22,12C22,12 19,16 12,16C5,16 2,12 2,12C2,12 5,8 12,8C19,8 22,12 22,12M12,10A2,2 0 0,0 10,12A2,2 0 0,0 12,14A2,2 0 0,0 14,12A2,2 0 0,0 12,10Z" />
+            </svg>
+            <span class="samak">Samak</span>
+            <span class="market">Market</span>
+        </div>
+        <div style="color: #5f6368; font-size: 14px;">Accueil | Produits | Audit</div>
+    </nav>
+
+</body>
+</html>
+  <!-- <section class="grillade-section" aria-label="Poisson Grillade — La Tradition Marocaine">
+
     <div class="grillade-container">
       
       <div class="grillade-header">
@@ -46,8 +172,9 @@
         </div>
      </div>
     </div>
-  </section>
+  </section> -->
 </template>
+
 <script setup>
 
 </script>

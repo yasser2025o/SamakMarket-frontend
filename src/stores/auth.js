@@ -107,6 +107,7 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   // Exposer tout ce dont les composants ont besoin
+ // Exposer tout ce dont les composants ont besoin
   return {
     // State
     token,
@@ -118,7 +119,8 @@ export const useAuthStore = defineStore('auth', () => {
     // Actions
     seConnecter,
     sInscrire,
-    seDeconnecter,
+    seDeconnecter, 
+    logout: seDeconnecter, // Now both auth.seDeconnecter() AND auth.logout() will work!
     rafraichirProfil,
   }
 })
